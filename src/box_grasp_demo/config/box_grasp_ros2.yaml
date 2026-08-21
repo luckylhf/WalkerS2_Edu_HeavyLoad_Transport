@@ -1,0 +1,300 @@
+# ============================================================================
+# Walker S2 双臂抱箱 — 感知与抓取配置
+# ============================================================================
+# 使用方：
+#   box_grasp_demo 节点  — 点云检测 + 抓取位姿计算（读取本文件全部参数）
+#   grasp_validation 节点 — 抓取位姿校验（参数由 launch 文件传入，代码有默认值）
+#   arm_ik_pinocchio 节点 — IK 求解（参数由 launch 文件直接传入）
+# ============================================================================
+
+# 通配符 key：节点带 namespace（如 /demo3）时，裸节点名 key 不会被
+# 参数文件匹配到；/** 匹配所有节点，保证参数生效。
+/**:
+  ros__parameters:
+
+    # ========================================================================
+    # 输入输出
+    # ========================================================================
+
+    # 双目相机点云话题
+    input_topic: /sensor/camera/stereo/pointcloud/raw
+
+    # 输出位姿的参考坐标系（箱体位姿、抓取位姿均在此系下发布）
+    target_frame: base_link
+
+    # 仅在真机没有发布点云 frame 的完整 TF 链时，才使用以下手眼回退参数。
+    # 正常 S2 运行直接使用 base_link <- PointCloud2.header.frame_id。
+    camera_parent_frame: head_pitch_link
+
+    # 保持为空：真机 /tf_static 已包含 stereo_left_rectified_optical_frame
+    # 到 head_pitch_link 的安装变换。重复套用外参会导致坐标错误。
+    camera_extrinsic_file: ""
+
+    # 仅供上述回退文件使用。
+    camera_extrinsic_direction: parent_from_camera
+
+    # 点云处理周期（秒）
+    processing_period: 0.25
+
+    # 连续稳定判定：连续 stable_count_threshold 次检测到箱子且中心移动
+    # 不超过 stable_position_tolerance（m）后停止检测。单帧 OBB 中心噪声
+    # 约 ±6 mm，放宽到 0.02 m 可避免稳定计数被噪声反复重置。
+    stable_count_threshold: 4
+    stable_position_tolerance: 0.02
+    # 连续漏检达到该帧数才清零稳定计数，容忍偶发单帧漏检。
+    max_consecutive_misses: 3
+
+    # Action 检测超时：触发后若该秒数内从未检测到箱子，则中止 goal。
+    action_timeout: 5.0
+    # 稳定后等待 IK 节点回传关节数据的最长时间（秒）。
+    # 4 组 IK（pregrasp/grasp/aftergrasp/place）串行求解在 .so 下实测
+    # 约 9s，保留余量设为 15s，避免目标较难时 action 先返回丢失 ik_data。
+    ik_result_timeout: 15.0
+
+    # ========================================================================
+    # 支撑平面检测（桌面/放置台）
+    # ========================================================================
+
+    # 地面参考 frame。base_link 离地高度 = base_footprint→base_link 的
+    # translation.z，由 TF 动态读取（真机下蹲/站立时会随之变化）。
+    ground_frame: base_footprint
+
+    # 抓取桌面离地绝对高度（m）。用于把固定桌面高度转换到 base_link 系：
+    # 桌面在 base_link 系的 Z = table_height - base_link离地高度。
+    # 直接填写卷尺量出的桌面离地高度即可：抓取时箱子位置由视觉检测给出，
+    # table_height 只用于计算下蹲量（让桌面落在 IK 可达区间）和桌面高度
+    # 合法性校验，卷尺误差不影响抓取。合法范围 [0.75, 1.10]（主程序常量
+    # TABLE_HEIGHT_MIN/MAX），超出时主程序直接报错、不执行。
+    #
+    # 怎么标定（如需核对系统值）？
+    #   把箱子放在抓取桌面上运行一键标定脚本：
+    #     ros2 run box_grasp_demo calibrate_table_height.py
+    #   脚本自动检查头部姿态（未低头会主动低头）→ 执行一次检测 →
+    #   读 base_link 离地 → 输出建议填写值：
+    #     table_height = base_link离地 + 视觉实测桌面Z + 一点余量
+    #   换桌后重新跑一次脚本即可。
+    # 当前桌子离地 0.85 m。
+    table_height: 0.85
+
+    # 支撑平面高度偏移（相对上面算出的桌面 Z 中心，单位 m）。
+    # 例如桌面绝对高度 0.85、base_link 离地 0.866 时桌面 Z≈-0.016，
+    # 实际过滤范围为 [-0.016-0.10, -0.016+0.10] = [-0.116, 0.084]。
+    support_height_min: -0.1
+    support_height_max: 0.1
+
+    # RANSAC 平面拟合点到平面的距离阈值（m）
+    plane_distance: 0.050
+
+    # ========================================================================
+    # 点云预处理
+    # ========================================================================
+
+    # 工作空间（真机 TF：base_link 离地约 0.8722 m；过滤发生在 pointcloud_offset 之前）。
+    # 这里故意放宽 X/Y/Z，方便自由调整 pointcloud_offset（例如把箱子朝
+    # 机器人拉近到 IK 可解算范围）。桌面高度仍由 support_height_min/max
+    # 单独限定，因此放宽 Z 不会破坏支撑平面选择。
+    # 目标箱中心 X≈0.48、短边半尺寸 0.15，远侧短边约 0.63；放宽后仍能
+    # 完整覆盖目标箱并保留周边余量。
+    # Z 下限收紧到 -0.10：桌面在 base_link 系 Z≈0，-0.50 会把桌面以下
+    # 的地面/杂点放进工作空间，干扰聚类与 OBB 尺寸匹配导致偶发漏检。
+    workspace_min: [-0.20, -0.80, -0.10]
+    workspace_max: [1.00, 0.80, 0.50]
+
+    # 点云整体平移（target_frame/base_link 系，单位 m）。
+    # 仅调整 X/Y 时无需改 support_height；若调整 Z，请同步调整上面的
+    # support_height_min/max，否则桌面会移出支撑高度范围导致漏检。
+    pointcloud_offset: [0.0, 0.0, 0.00]
+
+    # ========================================================================
+    # 箱子型号配置
+    # ========================================================================
+
+    # 当前使用的箱子型号名，必须是 box_models 里的 key。
+    box_model: small_box3
+
+    # 箱子型号库：base_box 为完整默认参数，其他型号只需写要覆盖的字段，
+    # 未写字段自动继承 base_box。
+    box_models:
+      base_box:
+        # 箱体长边尺寸（m）
+        box_length: 0.40
+        # 箱体短边尺寸（m）
+        box_width: 0.30
+        # 箱体高度（m）
+        box_height: 0.14
+        # 尺寸匹配容差（相对比例，0.08=±8%），容忍点云遮挡导致的 OBB 波动
+        dimension_tolerance: 0.08
+        # 物体最大高度（m），超过该高度的点不参与箱体提取
+        max_object_height: 0.50
+        # 工具接触点在箱体顶面下方的距离（m）
+        tool_contact_below_top: 0.06
+        # 夹爪侧面安全间隙（m），负值表示朝箱体内部压入
+        side_clearance: -0.02
+        # 预抓取点相对抓取点的后退距离（m），用于安全接近
+        pregrasp_distance: 0.08
+        # true=抓取长边；false=抓取短边（双手位于 +/- 长轴方向）
+        grasp_long_edge: false
+      # 示例：更矮的箱子，只覆盖高度与接触点。
+      small_box:
+        box_length: 0.39
+        box_height: 0.12
+        tool_contact_below_top: 0.035
+      small_box2:
+        box_length: 0.40
+        box_height: 0.14
+        tool_contact_below_top: 0.06
+      small_box3:
+        box_length: 0.40
+        box_height: 0.23
+        tool_contact_below_top: 0.06
+
+    # ========================================================================
+    # 箱体检测（检测器通用参数，与箱子型号无关）
+    # ========================================================================
+
+    # 箱子平放于桌面（推荐 true）：
+    #   true  = 按平放假设处理，配合 max_box_tilt_deg 允许小倾角；
+    #   false = 不检查角度，直接采用 OBB 竖轴，箱子任意倾斜都允许。
+    upright_box: true
+
+    # 箱体竖轴允许偏离竖直方向的最大角度（度），0 = 强制 Rx=Ry=0。
+    # 仅 upright_box=true 时生效：由长/短轴两侧边带顶部高分位点差分
+    # 估计顶面斜率，倾角 ≤ 该值时采用估计竖轴（真实解算 Rx/Ry），
+    # 超过该值直接判定检测失败、不执行抓取。
+    max_box_tilt_deg: 8.0
+
+    # 箱内物品从开口突出的高度不参与箱体外框拟合（m）。
+    # 增大此值可过滤掉更多顶部突起点
+    top_outlier_margin: 0.015
+
+    # 边框拟合时是否测量实际高度（true=从点云测量，false=使用配置的box_height）
+    # 顶部边缘点稀疏时 95 分位会低估箱高，已知尺寸的箱子建议 false
+    measure_actual_height: false
+
+    # 最小连通分量点数，少于该点数的聚类被丢弃（滤噪）
+    min_component_points: 20
+
+    # 平面拟合最小内点数（桌面点稀疏时降低此值）
+    min_plane_inliers: 25
+
+    # ========================================================================
+    # 抓取位姿计算
+    # ========================================================================
+    # 注：tool_contact_below_top / side_clearance / pregrasp_distance /
+    # grasp_long_edge 已移入上面的 box_models 型号库，按当前 box_model 生效。
+
+    # 抓取后（aftergrasp）沿箱体竖轴向上抬起的高度（m）。
+    # 与降低后的抓取点叠加后，抓取后位姿约等于原抓取高度。
+    aftergrasp_lift_height: 0.05
+
+    # ========================================================================
+    # 收回（retract）目标
+    # ========================================================================
+    # 躯干前表面在 base_link 系的 X（URDF waist_pitch_link 碰撞盒
+    # 0.2844/2 = 0.1422）。收回目标 = 箱子近身面 X ≈ body_surface_x +
+    # retract_body_clearance。代码里 target_center_x = 近身面X + 朝身体
+    # 半宽（retract_rz 旋转后：rz=0 为 box_length/2，rz=±90° 为
+    # box_width/2），再经 min() 钳位不超过箱子当前 X：
+    #   配大值（如 10.0）时目标中心恒大于当前中心，min() 取当前值，
+    #   收回不产生平移，仅把箱子摆正姿态、中心 Y 归零。
+    #   注意 body_surface_x 必须 ≥ 躯干前表面 0.142，否则箱子近身面
+    #   会穿进躯干碰撞盒（0.12 时穿模约 2cm）。
+    body_surface_x: 0.12
+    retract_body_clearance: 0.0
+
+    # 收回后箱体绕 base_link Z 轴的转角（deg）。-90 = 箱体长轴转到
+    # 左右（Y）方向，横抱在胸前。
+    retract_rz_deg: -90.0
+
+    # 默认抓取姿态（14 个手臂关节角，单位 rad），作为 IK 初始种子及
+    # pregrasp 模式的待机姿态。真机当前肩 roll 约 -45°（-pi/4）。
+    # 关节顺序 [shoulder_pitch, shoulder_roll, shoulder_yaw,
+    #           elbow_roll, elbow_yaw, wrist_pitch, wrist_roll] x L/R。
+    pregrasp_q: [0.0, -0.785, -1.57, -1.57, 1.57, 0.0, 0.0,
+                 0.0, -0.785, 1.57, -1.57, -1.57, 0.0, 0.0]
+
+    # ---- v1 夹爪：wrist_roll_link → tool 坐标系（按 s2_v1.urdf 零位 FK） ----
+    # tool 坐标系定义（零位手腕下相对 base_link 的世界方向）：
+    #   原点   = tool.stl 接触面长边中心（工作点 [50, 0, 20] mm），
+    #            再沿 tool 绿轴(+Y) 前移 0.04 m
+    #   绿 +Y = 机器人正前方（base_link +X），左右手一致
+    #   蓝 +Z = 左手朝右（base_link -Y）、右手朝左（base_link +Y）
+    #   红 +X = Y×Z（右手系；左手朝下、右手朝上）
+    # 平移 = 上述原点在各自 wrist_roll_link 系下的 FK 坐标（左右分别求取）。
+    left_wrist_to_grasp_rpy: [-1.570790312, -0.000007873, 1.570783077]
+    left_wrist_to_grasp_translation_xyz: [-0.068178153, 0.093897912, -0.021682127]
+
+    right_wrist_to_grasp_rpy: [1.570783077, 0.000009148, -1.570790312]
+    right_wrist_to_grasp_translation_xyz: [-0.068178153, 0.093897912, 0.021682127]
+
+    # ========================================================================
+    # 放置平台检测（可选，默认关闭）
+    # ========================================================================
+
+    # 是否启用放置区域检测
+    placement_roi_enabled: false
+
+    # 放置平台 ROI（target_frame 坐标系，单位 m）
+    # 启用后在 ROI 内重新拟合支撑平面并计算放置位姿
+    placement_roi_min: [0.0, 0.0, 0.0]
+    placement_roi_max: [0.0, 0.0, 0.0]
+
+    # ========================================================================
+    # 放置位姿（IK place 模式）
+    # ========================================================================
+
+    # 放置桌面离地绝对高度（m）。与上面的 table_height（抓取桌）相互独立，
+    # 允许抓取桌和放置桌高度不同。
+    #
+    # 为什么不能直接填卷尺量出的桌子真实高度？
+    #   放置时箱底高度 = place_table_height - base_link离地高度 + place_clearance，
+    #   而 base_link离地高度来自 TF（base_footprint→base_link.z），视觉点云
+    #   也存在相机标定/外参误差。这两套“系统坐标”与卷尺物理尺寸并不完全一致。
+    #   例如当前下蹲时：卷尺量桌子约 0.85 m，但 TF 读出 base_link离地 0.815 m，
+    #   视觉实测桌面 Z≈0.060 m，反推系统里的桌面离地 = 0.815 + 0.060 ≈ 0.875 m。
+    #   如果直接填 0.85，算出的箱底 Z=0.04 m，比视觉实测桌面低约 2.5 cm，
+    #   手臂就会把箱子往下压到桌子里。
+    #
+    # 应该怎么填写？（一键标定脚本）
+    #   ros2 run box_grasp_demo calibrate_table_height.py
+    #   脚本流程：把箱子放在放置桌面上 → 输入卷尺实测桌面高度 → 自动检查
+    #   头部姿态（未低头会主动低头）→ 执行一次检测 → 反推视觉实测桌面 Z
+    #   （箱子中心 Z - 箱高/2）→ 读 base_link 离地 → 输出建议填写值：
+    #     place_table_height = base_link离地 + 视觉实测桌面Z + 一点余量
+    #   换桌后重新跑一次脚本即可。
+    #   示例：0.815 + 0.060 ≈ 0.875，取 0.88，配合 place_clearance=0.005，
+    #   得到 place_z≈0.070 m，略高于视觉实测桌面 0.060 m，避免压桌。
+    #   真机现场实测为 0.782。
+    place_table_height: 0.78
+
+    # base_link 离地高度（m）。仅在 TF 查询失败时作为回退值使用；
+    # 正常情况下 place 模式会动态读取 base_footprint→base_link 的 Z。
+    # 站立时实测 0.866（下蹲 5cm 实测 0.815）。
+    base_link_height: 0.866
+
+    # 放置离桌安全间隙（m）。箱底在放置桌面高度上再抬高该值，
+    # 避免控制/标定误差导致箱子压桌。
+    place_clearance: 0.005
+
+    # 箱体中心在 base_link 系的 X/Y（m）与绕 Z 轴的 yaw（度）。
+    # X=0.4, Y=0 位于机器人正前方，预留安全距离避免箱子撞到本体。
+    place_x: 0.40
+    place_y: 0.0
+    # yaw=0 时左腕目标 x≈0.648，超出双臂可达范围，IK 无法收敛。
+    # 保持 place_x=0.40 时，将 yaw 设为 ±70°~±90° 可让 place IK 收敛到 <1mm。
+    place_yaw_deg: -90.0
+
+    # ========================================================================
+    # 下蹲高度建议 / 桌面高度合法性校验（只读说明，参数在代码中，非配置项）
+    # ========================================================================
+    # 以下数值由 URDF 模型与 biped 硬件决定，作为 box_grasp_node_ros2.py 中的
+    # 模块级常量，不应通过参数文件修改：
+    #   DESIRED_GRASP_TABLE_Z / DESIRED_PLACE_TABLE_Z = 0.035 m
+    #       —— 期望桌面相对 base_link 的 Z（base_link 比桌面低约 0.035 m）。
+    #         实测 0.85m 桌下蹲约 5cm 即可解算，对应值即此。
+    #   MAX_CROUCH = 0.2 m
+    #       —— biped 最大下蹲量（下蹲为负值）。
+    #   TABLE_HEIGHT_MIN / TABLE_HEIGHT_MAX = 0.75 / 1.10 m
+    #       —— 抓取桌 table_height 与放置桌 place_table_height 的允许范围，
+    #          超出时主程序直接报错、不执行检测/抓取/放置。
+    # 数值依据见 box_grasp_demo.arm_ik.test_ik_reachability 的扫描结果。

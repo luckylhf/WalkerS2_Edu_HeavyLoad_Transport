@@ -1,0 +1,16 @@
+{
+  "component_names": ["left_arm"],
+  "goals": [
+    [
+      "REPLACE_WITH_REVIEWED_J1_RAD",
+      "REPLACE_WITH_REVIEWED_J2_RAD",
+      "REPLACE_WITH_REVIEWED_J3_RAD",
+      "REPLACE_WITH_REVIEWED_J4_RAD",
+      "REPLACE_WITH_REVIEWED_J5_RAD",
+      "REPLACE_WITH_REVIEWED_J6_RAD",
+      "REPLACE_WITH_REVIEWED_J7_RAD"
+    ]
+  ],
+  "mode": 1,
+  "vel_scale": 0.2
+}

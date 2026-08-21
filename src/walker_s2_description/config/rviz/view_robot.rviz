@@ -1,0 +1,45 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Global Options:
+    Background Color: 48; 48; 48  # 背景颜色
+    Fixed Frame: base_link        # 必须与URDF的根link一致
+    Frame Rate: 30                # 显示帧率
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 3.0               # 初始观察距离
+      Name: Current View
+      Target Frame: base_link     # 目标坐标系
+  Displays:
+    - Class: rviz_default_plugins/RobotModel
+      Description Topic: /robot_description
+      Enabled: true
+      Name: RobotModel
+      TF Prefix: ""               # 重要！保持为空
+      Visual Enabled: true
+      Collision Enabled: false    # 调试时关闭碰撞模型
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 0.3           # 坐标系箭头大小
+      Show Arrows: true
+      Show Names: true
+    - Class: rviz_default_plugins/Grid
+      Cell Size: 0.5              # 网格尺寸
+      Color: 160; 160; 160
+      Enabled: true
+      Line Style: Lines
+      Normal Cell Count: 0
+      Plane: XY
+      Reference Frame: base_link
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Window Geometry:
+    Height: 768
+    Width: 1024

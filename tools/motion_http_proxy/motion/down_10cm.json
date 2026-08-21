@@ -1,0 +1,10 @@
+{
+  "component_names": ["biped"],
+  "goals": [
+    [
+      0, 0, -0.1, 0, 0, 0
+    ]
+  ],
+  "mode": 1,
+  "vel_scale": 0.1
+}

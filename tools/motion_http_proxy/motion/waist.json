@@ -1,0 +1,10 @@
+{
+  "component_names": ["waist"],
+  "goals": [
+    [
+      0, 0.32
+    ]
+  ],
+  "mode": 1,
+  "vel_scale": 0.1
+}

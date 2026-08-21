@@ -1,0 +1,11 @@
+{
+  "component_names": ["head"],
+  "goals": [
+    [
+      0,-0.65
+
+    ]
+  ],
+  "mode": 1,
+  "vel_scale": 0.1
+}

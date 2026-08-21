@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>walker_s2_description</name>
+  <version>1.0.0</version>
+  <description>Original Walker S2 v1 URDF and meshes matching the robot TF.</description>
+  <maintainer email="hongfeng.long@ubtrobot.com">Walker S2 team</maintainer>
+  <license>Apache-2.0</license>
+  <license>LicenseRef-UBTECH-Proprietary</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

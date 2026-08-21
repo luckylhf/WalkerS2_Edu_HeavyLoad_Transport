@@ -1,0 +1,15 @@
+# 请求主程序/IK 节点根据当前 URDF 模型和桌面高度推算建议下蹲量。
+#
+# mode:
+#   photo  - 拍照前调整到适合观测桌面的高度
+#   grasp  - 抓取阶段
+#   place  - 放置阶段
+string mode
+---
+# 响应
+bool success                # 是否成功计算
+string message              # 说明信息
+float64 crouch_height       # 建议下蹲量 (m)，负值表示下蹲
+float64 base_link_height    # 计算时读取到的当前 base_link 离地高度 (m)
+float64 target_base_link_height  # 下蹲后期望的 base_link 离地高度 (m)
+float64 standing_base_link_height  # 站立位（home，下蹲量 0）base_link 离地高度 (m)

@@ -1,0 +1,19 @@
+# 触发一次箱体检测，并在稳定后返回结果，或在超时后中止。
+#
+# 目标：无字段（发送即触发）。
+---
+# 结果
+bool success              # 是否成功检测并稳定
+string message            # 人类可读的最终描述
+float64[3] box_center     # 检测到的箱体中心 (m)
+float64[3] box_dimensions # 箱体尺寸 [length, width, height] (m)
+string ik_data            # IK 节点返回的 5 组 14 关节数据（JSON 数组，
+                          # 顺序 pregrasp/grasp/aftergrasp/retract/place）
+float64 grasp_crouch      # 抓取阶段建议下蹲量 (m)，负值表示下蹲
+float64 place_crouch      # 放置阶段建议下蹲量 (m)，负值表示下蹲
+---
+# 反馈
+uint8 stable_count        # 当前稳定计数
+uint8 miss_count          # 当前连续漏检计数
+float64[3] box_center     # 当前帧箱体中心 (m)，未检测到时为 [0,0,0]
+string message            # 识别过程描述

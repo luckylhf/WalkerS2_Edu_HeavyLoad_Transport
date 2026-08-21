@@ -1,0 +1,435 @@
+Panels:
+  - Class: rviz_common/Displays
+    Help Height: 70
+    Name: Displays
+    Property Tree Widget:
+      Expanded: ~
+      Splitter Ratio: 0.5
+    Tree Height: 319
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz_common/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: Stereo PointCloud
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 0.10000000149011612
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 160
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Ground Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 20
+      Reference Frame: base_link
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        L_ankle_pitch_link:
+          Value: true
+        L_ankle_roll_link:
+          Value: true
+        L_arm_base_link:
+          Value: true
+        L_elbow_roll_link:
+          Value: true
+        L_elbow_yaw_link:
+          Value: true
+        L_hand_link:
+          Value: true
+        L_hip_pitch_link:
+          Value: true
+        L_hip_roll_link:
+          Value: true
+        L_hip_yaw_link:
+          Value: true
+        L_knee_pitch_link:
+          Value: true
+        L_shoulder_pitch_link:
+          Value: true
+        L_shoulder_roll_link:
+          Value: true
+        L_shoulder_yaw_link:
+          Value: true
+        L_sixforce_link:
+          Value: true
+        L_wrist_pitch_link:
+          Value: true
+        L_wrist_roll_link:
+          Value: true
+        R_ankle_pitch_link:
+          Value: true
+        R_ankle_roll_link:
+          Value: true
+        R_arm_base_link:
+          Value: true
+        R_elbow_roll_link:
+          Value: true
+        R_elbow_yaw_link:
+          Value: true
+        R_hand_link:
+          Value: true
+        R_hip_pitch_link:
+          Value: true
+        R_hip_roll_link:
+          Value: true
+        R_hip_yaw_link:
+          Value: true
+        R_knee_pitch_link:
+          Value: true
+        R_shoulder_pitch_link:
+          Value: true
+        R_shoulder_roll_link:
+          Value: true
+        R_shoulder_yaw_link:
+          Value: true
+        R_sixforce_link:
+          Value: true
+        R_wrist_pitch_link:
+          Value: true
+        R_wrist_roll_link:
+          Value: true
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
+        body_back_rgbd_color_frame:
+          Value: true
+        body_back_rgbd_color_optical_frame:
+          Value: true
+        body_back_rgbd_depth_frame:
+          Value: true
+        body_back_rgbd_depth_optical_frame:
+          Value: true
+        body_back_rgbd_gyro_accel_frame:
+          Value: true
+        body_back_rgbd_gyro_accel_optical_frame:
+          Value: true
+        body_back_rgbd_link:
+          Value: true
+        head_base_link:
+          Value: true
+        head_imu_link:
+          Value: true
+        head_left_fisheye_link:
+          Value: true
+        head_pitch_link:
+          Value: true
+        head_right_fisheye_link:
+          Value: true
+        head_yaw_link:
+          Value: true
+        stereo_left_rectified_optical_frame:
+          Value: true
+        stereo_left_rgb_link:
+          Value: true
+        stereo_left_rgb_optical_link:
+          Value: true
+        stereo_right_rgb_link:
+          Value: true
+        torso_link:
+          Value: true
+        waist_front_rgbd_color_frame:
+          Value: true
+        waist_front_rgbd_color_optical_frame:
+          Value: true
+        waist_front_rgbd_depth_frame:
+          Value: true
+        waist_front_rgbd_depth_optical_frame:
+          Value: true
+        waist_front_rgbd_gyro_accel_frame:
+          Value: true
+        waist_front_rgbd_gyro_accel_optical_frame:
+          Value: true
+        waist_front_rgbd_link:
+          Value: true
+        waist_pitch_link:
+          Value: true
+        waist_yaw_link:
+          Value: true
+      Marker Scale: 0.11999999731779099
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+      Tree:
+        base_footprint:
+          {}
+        base_link:
+          L_hip_roll_link:
+            L_hip_yaw_link:
+              L_hip_pitch_link:
+                L_knee_pitch_link:
+                  L_ankle_pitch_link:
+                    L_ankle_roll_link:
+                      {}
+          R_hip_roll_link:
+            R_hip_yaw_link:
+              R_hip_pitch_link:
+                R_knee_pitch_link:
+                  R_ankle_pitch_link:
+                    R_ankle_roll_link:
+                      {}
+          waist_front_rgbd_link:
+            waist_front_rgbd_color_frame:
+              waist_front_rgbd_color_optical_frame:
+                {}
+            waist_front_rgbd_depth_frame:
+              waist_front_rgbd_depth_optical_frame:
+                {}
+            waist_front_rgbd_gyro_accel_frame:
+              waist_front_rgbd_gyro_accel_optical_frame:
+                {}
+          waist_yaw_link:
+            waist_pitch_link:
+              body_back_rgbd_link:
+                body_back_rgbd_color_frame:
+                  body_back_rgbd_color_optical_frame:
+                    {}
+                body_back_rgbd_depth_frame:
+                  body_back_rgbd_depth_optical_frame:
+                    {}
+                body_back_rgbd_gyro_accel_frame:
+                  body_back_rgbd_gyro_accel_optical_frame:
+                    {}
+              torso_link:
+                L_arm_base_link:
+                  L_shoulder_pitch_link:
+                    L_shoulder_roll_link:
+                      L_shoulder_yaw_link:
+                        L_elbow_roll_link:
+                          L_elbow_yaw_link:
+                            L_wrist_pitch_link:
+                              L_wrist_roll_link:
+                                L_sixforce_link:
+                                  L_hand_link:
+                                    {}
+                R_arm_base_link:
+                  R_shoulder_pitch_link:
+                    R_shoulder_roll_link:
+                      R_shoulder_yaw_link:
+                        R_elbow_roll_link:
+                          R_elbow_yaw_link:
+                            R_wrist_pitch_link:
+                              R_wrist_roll_link:
+                                R_sixforce_link:
+                                  R_hand_link:
+                                    {}
+                head_base_link:
+                  head_yaw_link:
+                    head_pitch_link:
+                      head_left_fisheye_link:
+                        {}
+                      head_right_fisheye_link:
+                        {}
+                      stereo_left_rgb_link:
+                        stereo_left_rgb_optical_link:
+                          head_imu_link:
+                            {}
+                          stereo_left_rectified_optical_frame:
+                            {}
+                      stereo_right_rgb_link:
+                        {}
+      Update Interval: 0
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: ""
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: Walker S2 URDF
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Stereo PointCloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 2
+      Size (m): 0.009999999776482582
+      Style: Points
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /sensor/camera/stereo/pointcloud/raw
+      Use Fixed Frame: true
+      Use rainbow: false
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Box and Grasp Markers
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /demo3/box_grasp_demo/markers
+      Value: true
+    - Alpha: 1
+      Axes Length: 0.11999999731779099
+      Axes Radius: 0.00800000037997961
+      Class: rviz_default_plugins/Pose
+      Color: 255; 40; 40
+      Enabled: true
+      Head Length: 0.029999999329447746
+      Head Radius: 0.009999999776482582
+      Name: Left Grasp Pose
+      Shaft Length: 0.07999999821186066
+      Shaft Radius: 0.00800000037997961
+      Shape: Axes
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /demo3/box_grasp_demo/left_grasp_pose
+      Value: true
+    - Alpha: 1
+      Axes Length: 0.11999999731779099
+      Axes Radius: 0.00800000037997961
+      Class: rviz_default_plugins/Pose
+      Color: 40; 80; 255
+      Enabled: true
+      Head Length: 0.029999999329447746
+      Head Radius: 0.009999999776482582
+      Name: Right Grasp Pose
+      Shaft Length: 0.07999999821186066
+      Shaft Radius: 0.00800000037997961
+      Shape: Axes
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /demo3/box_grasp_demo/right_grasp_pose
+      Value: true
+    - Alpha: 1
+      Axes Length: 0.10000000149011612
+      Axes Radius: 0.006000000052154064
+      Class: rviz_default_plugins/Pose
+      Color: 255; 180; 20
+      Enabled: true
+      Head Length: 0.019999999552965164
+      Head Radius: 0.00800000037997961
+      Name: Placement Pose
+      Shaft Length: 0.05999999865889549
+      Shaft Radius: 0.006000000052154064
+      Shape: Axes
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /demo3/box_grasp_demo/placement_pose
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+      Hide Inactive Objects: true
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 2.5
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.44999998807907104
+      Target Frame: base_link
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 0.800000011920929
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 900
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd000000020000000000000156000002ebfc0200000002fb000000100044006900730070006c006100790073010000003d000001c2000000c900fffffffb0000000a00560069006500770073010000020500000123000000a400ffffff000000030000057800000039fc0100000001fb0000000800540069006d0065010000000000000578000002fb00ffffff0000041c000002eb00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Time:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1400
+  X: 70
+  Y: 50
