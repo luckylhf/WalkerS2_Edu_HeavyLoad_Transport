@@ -515,7 +515,7 @@ base_link 离地高度:         0.815 m
 推算桌面高度(建议填写值):   0.880 m
 请将推算值填写到 config/box_grasp_ros2.yaml：
   抓取桌 → table_height:      0.880
-  放置桌 → place_table_height: 0.880
+  放置桌 → place_table_height: 0.780
 ```
 
 使用建议：

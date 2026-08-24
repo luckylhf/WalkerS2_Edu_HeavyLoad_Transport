@@ -12,7 +12,7 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def load_robot_description():
-    path = Path(get_package_share_directory("walker_s2_description")) / "urdf" / "walker_s2.urdf"
+    path = Path(get_package_share_directory("walker_s2_description")) / "urdf/s2_v1/s2_v1.urdf"
     return path.read_text()
 
 
@@ -22,7 +22,7 @@ def generate_launch_description():
     config = PathJoinSubstitution([package_share, "config", "box_grasp_ros2.yaml"])
     rviz_config = PathJoinSubstitution([package_share, "config", "box_grasp_sim.rviz"])
     robot_description = load_robot_description()
-    urdf_path = PathJoinSubstitution([robot_share, "urdf", "walker_s2.urdf"])
+    urdf_path = PathJoinSubstitution([robot_share, "urdf/s2_v1", "s2_v1.urdf"])
 
     ns = LaunchConfiguration("ns")
 

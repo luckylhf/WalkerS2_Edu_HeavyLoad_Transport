@@ -55,12 +55,14 @@ TABLE_HEIGHT_MAX = 1.10
 #
 # 历史语义（供理解参数）：
 #   body_surface_x —— 躯干前表面在 base_link 系的 X（URDF waist_pitch_link
-#     碰撞盒 0.2844/2 = 0.1422，取 0.142）。收回目标 = 箱子近身面 X ≈
-#     body_surface_x + retract_body_clearance，再按箱体尺寸反推中心目标 X。
+#     碰撞盒 0.2844/2 = 0.1422，取 0.142；实际去0.12，原因见box_grasp_ros2.yaml说明）。
+#     收回目标 = 箱子近身面 X ≈ body_surface_x + retract_body_clearance，
+#     再按箱体尺寸反推中心目标 X。
 #     实测默认配 10.0：目标中心 X 远大于箱子当前 X，min() 钳位取当前值，
 #     即收回不产生平移、仅摆正姿态（详见 cloud_callback 中 retract 计算）。
 #   retract_rz_deg —— 收回后箱体绕 base_link Z 轴的转角（deg），-90 表示
 #     箱体长轴转到左右（Y）方向横抱在胸前。
+#     dragon
 
 
 class _RclpySleep:
@@ -223,7 +225,7 @@ class BoxGraspNode(Node):
         declare("placement_roi_min", [0.0, 0.0, 0.0])
         declare("placement_roi_max", [0.0, 0.0, 0.0])
         declare("base_link_height", 0.8722)
-        declare("place_table_height", 0.85)
+        declare("place_table_height", 0.78)
         declare("place_x", 0.40)
         declare("place_y", 0.0)
         declare("place_yaw_deg", 0.0)
