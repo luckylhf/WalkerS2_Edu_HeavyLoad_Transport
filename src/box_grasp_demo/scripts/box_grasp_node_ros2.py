@@ -62,7 +62,7 @@ TABLE_HEIGHT_MAX = 1.10
 #     即收回不产生平移、仅摆正姿态（详见 cloud_callback 中 retract 计算）。
 #   retract_rz_deg —— 收回后箱体绕 base_link Z 轴的转角（deg），-90 表示
 #     箱体长轴转到左右（Y）方向横抱在胸前。
-#     dragon
+
 
 
 class _RclpySleep:
